@@ -170,9 +170,8 @@ router.post('/login', function(req, res, next) {
   });
 
 
-  router.get('*',(req,res)=>{
-res.sendFile(path.join(__dirname,'public/index.html'))
-})
+ 
+
 
   router.get('/profile', passport.authenticate('jwt',{
   session:false
@@ -181,11 +180,16 @@ res.sendFile(path.join(__dirname,'public/index.html'))
   return res.json({
       user:req.user})
   });
+
+
   router.get('/det', passport.authenticate('jwt',{
     session:false
     }),function(req, res, next) {
      Details.findOne()
     });
+
+
+
     
 
   router.post('/postItems', passport.authenticate('jwt',{
@@ -233,55 +237,23 @@ console.log(req.params.id)
   
 
     router.post('/upload',upload.single('file'),(req,res,next)=>{
-        // let fmsg=[]
-        // upload(req,res,(err)=>{
-        //     if(err){
-        //         res.render("layouts/main",{
-        //             msg:err
-        //         })
-        //     }else{
-        //        if(req.file==undefined && req.body.itemName==''){
-        //            res.render("layouts/main",{
-        //                msg:'Error: no file selected!'
-        //            })
-        //        }
-        //        else if(req.body.price==''){
-        //         res.render("layouts/main",{
-        //             msg:'Error: please input an amount!'
-        //         })
-        //        }else if(req.body.itemName==''){
-        //         res.render("layouts/main",{
-        //             msg:'Error: input the name of  the item!'
-        //         })
-        //        }
-        //        else{
-              
-        //         res.render("layouts/main",{
-        //             msg:'File uploaded',
-        //             file:`/uploads/${req.file.filename}`,
-        //             price:req.body.price,
-        //             itemName:req.body.itemName,
-                    
-        //         })
-        //        }
-        //     }
-        // })
+        
         res.json({
             file:req.file
         })
     });
 
-router.use((err,req,res,next)=>{
-if(err.code==='LIMIT_FILE_TYPES'){
-    res.status(422).json({
-        error:'only images are allow'
-    });
-    return
-}if(err.code==='LIMIT_FILE_SIZE'){
-    res.status(422).json({
-        error:`too large. Max size is ${MAZ_SIZE/1000}kb`
-    });return;
-}
-})
+// router.use((err,req,res,next)=>{
+// if(err.code==='LIMIT_FILE_TYPES'){
+//     res.status(422).json({
+//         error:'only images are allow'
+//     });
+//     return
+// }if(err.code==='LIMIT_FILE_SIZE'){
+//     res.status(422).json({
+//         error:`too large. Max size is ${MAZ_SIZE/1000}kb`
+//     });return;
+// }
+// })
        
 module.exports = router;

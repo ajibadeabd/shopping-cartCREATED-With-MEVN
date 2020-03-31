@@ -75,7 +75,7 @@ async add({
         commit
     }){
         commit('profile_request');
-        let  res =  await Api().get('/api/profile')
+        let  res =  await axios.get('/api/profile')
         commit('user_profile',res.data.user)
         // let User=res.data.user
         // console.log(User.name)
