@@ -16,7 +16,7 @@ router.get('/', function (req, res, next) {
     });
     
 });
-//display all products in a specific Category
+//display all products in l specific Category
 router.get('/:category', function (req, res, next) {
     
     Category.findOne({title: req.params.category}, function (err, category) {

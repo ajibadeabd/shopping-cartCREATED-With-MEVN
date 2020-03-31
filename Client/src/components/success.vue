@@ -1,6 +1,6 @@
 <template>
     <div class="alert alert-success">
-        {{msg}}
+        <!-- {{msg}} -->
     </div>
 </template>
 <script>

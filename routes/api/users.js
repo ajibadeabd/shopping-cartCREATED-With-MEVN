@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../../models/users');
+const multer= require('multer');
 const Product = require('../../models/Product');
 const Details = require('../../models/Details');
 const cors =require("cors")
@@ -8,6 +9,41 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const passport = require("passport")
 const mongoose = require('mongoose');
+
+
+const storage = multer.diskStorage(
+    {destination:"./public/uploads/",
+    filename:(req,file,cb)=>{
+        cb(null,file.fieldname + "-"+ Date.now()+
+        path.extname(file.originalname))
+    }}
+)
+const fileFilter=(req,file,cb)=>{
+    const allowatypes=
+    ['image/jpeg','image/jpg','image/gif','image/png']
+    if(!allowatypes.includes(file.mimetype)){
+        const error= new Error("wrong file type")
+    error.code='LIMIT_FILE_TYPES';
+    return cb(error,false)
+    }
+    cb(null,true)
+  
+}
+const upload=multer({
+    destination:"./public/uploads/",
+   
+    fileFilter
+
+})
+
+
+
+
+
+
+
+
+
 
 process.env.SECRET_KEY='secure'
 router.use(cors())
@@ -134,6 +170,10 @@ router.post('/login', function(req, res, next) {
   });
 
 
+  router.get('*',(req,res)=>{
+res.sendFile(path.join(__dirname,'public/index.html'))
+})
+
   router.get('/profile', passport.authenticate('jwt',{
   session:false
   }),function(req, res, next) {
@@ -185,78 +225,63 @@ console.log(req.params.id)
                     id
                      ) 
             });
-        //  findOneAndUpdate
+      
       
           });
           
-    //         Details.findOne({_id:req.params.id})
-    //         .then((user)=>{
-    //             if(!user){
-    //                 res.json(err)
-    //             }else{
-    //                 user.address=req.body.address
-    //                 console.log(user.address)
-    //                                    Details.save()
-    //                                    .then((Detail)=>{
-    //                                     //    console.log(Detail.address)
-                   
-    //                                        res.status(200).json({
-    //                                            success:true,
-    //                                            Detail,
-                                       
-    //                                            msg:`your  ${req.body} has been sucessfully updated on your profile`
-    //                                        })
-    //                                    }) 
-    //             }
-    //             // user.postal_code=req.body.postal_code,
-                
-    //         })
-    //         .catch((err)=>{
-    //             res.json(err)
-    //         })
-            
-    // // 
-    // // let task =req.body
-    // //  let updateTask={}
-    // //  if(task.address){
-    // //      updateTask.address=task.address
-    // //  }
-    // //  if(!updateTask){
-    // //      res.status(200).json({
-    // //          error:'b ad Data'
-    // //      })
-    // //  }else{
-
-    // //  }
+   
   
 
-//     router.post('/addDetail/:id',function(req, res, next) {
+    router.post('/upload',upload.single('file'),(req,res,next)=>{
+        // let fmsg=[]
+        // upload(req,res,(err)=>{
+        //     if(err){
+        //         res.render("layouts/main",{
+        //             msg:err
+        //         })
+        //     }else{
+        //        if(req.file==undefined && req.body.itemName==''){
+        //            res.render("layouts/main",{
+        //                msg:'Error: no file selected!'
+        //            })
+        //        }
+        //        else if(req.body.price==''){
+        //         res.render("layouts/main",{
+        //             msg:'Error: please input an amount!'
+        //         })
+        //        }else if(req.body.itemName==''){
+        //         res.render("layouts/main",{
+        //             msg:'Error: input the name of  the item!'
+        //         })
+        //        }
+        //        else{
+              
+        //         res.render("layouts/main",{
+        //             msg:'File uploaded',
+        //             file:`/uploads/${req.file.filename}`,
+        //             price:req.body.price,
+        //             itemName:req.body.itemName,
+                    
+        //         })
+        //        }
+        //     }
+        // })
+        res.json({
+            file:req.file
+        })
+    });
 
-//         User.findOne({_id:req.params.id})
-//         .then((user)=>{
-//             // user.postal_code=req.body.postal_code,
-//             user.address=req.body.address
-// console.log(user.address)
-//                 Details.save().then((Detail)=>{
-//                     console.log(Detail.address)
-
-//                     res.status(200).json({
-//                         success:true,
-//                         Detail,
-                
-//                         msg:`your  ${req.body} has been sucessfully updated on your profile`
-//                     })
-//                 })
-//         })
-//         .catch((err)=>{
-//             res.json(err)
-//         })
-        
-// // 
-      
-
-//     });
-
-
+router.use((err,req,res,next)=>{
+if(err.code==='LIMIT_FILE_TYPES'){
+    res.status(422).json({
+        error:'only images are allow'
+    });
+    return
+}if(err.code==='LIMIT_FILE_SIZE'){
+    res.status(422).json({
+        error:`too large. Max size is ${MAZ_SIZE/1000}kb`
+    });return;
+}
+})
        
 module.exports = router;

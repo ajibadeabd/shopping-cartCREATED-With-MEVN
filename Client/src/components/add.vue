@@ -2,7 +2,7 @@
     <div class="container">
     <div class="row">
         <div class="col-md-6 mx-auto">
-            <form @submit.prevent="addItem">
+            <!-- <form @submit.prevent="addItem">
 <h1 class="h3 mb-3 font-weight-normal">please sign in</h1>
 <div  class=form-group>
     <label for="Name">Name</label>
@@ -35,17 +35,40 @@
   
   <input type="submit" value="Add" class="btn btn-primary">
  
-            </form>
+            </form> -->
         </div>
     </div>
+    <!-- <form  content-Type="multipart/form-data" > -->
+    
+    
+    <!-- <div class="field"> -->
+        <!-- <label for="file"  class="label">
+            upload filee
+        </label> -->
+         <!-- <input type="file"  @change="selectfile" ref="file"> -->
+    <!-- </div> -->
+    <!-- </form> -->
+    <div @click='showfile'>fgr</div>
+    <!-- <form  content-Type="multipart/form-data" >
+      <input type="file"  @change="selectfile" ref="file">
+  </form> -->{{message}}
+   <form  form @submit.prevent="put" enctype="multipart/form-data" >
+     <div class="field">
+         <label for="file">
+             uploads
+         </label>
+          <input type="file"  @change="selectfile" ref="file">
+     </div>
+     <button class='btn grey waves-effect'>send</button>
+  </form>
 </div>
 
 </template>
 <style scoped>
 
-</style>
+</style> 
 <script>
-// import Api from '@/config/Api'
+import axios from 'axios'
 import {mapActions} from 'vuex'
 
 export default {
@@ -54,14 +77,44 @@ export default {
             name:'',
             description:'',
             category:'Electronics',
-            amount:''
+            amount:'',
+            file:"",
+            message:'',
+            error:false
 
         }
        
     },
      methods:{
-//            
+     async    put(){
+const formData =new FormData()
+formData.append('file',this.file)
+        try{
+ await  axios.post('http://localhost:3000/api/upload',formData)
+            //  .then(res=>{
+                this.file=''
+                this.error=false
+                this.message='file has been uploaded'
+            //  console.log(res.data)
+            //  })
+        } catch(err){
+                this.message=err.res.data
+                this.error=true
 
+        }  
+         },
+//            
+selectfile(){
+this.file=this.$refs.file.files[0];
+// this.file
+
+},
+
+
+showfile(){
+this.file
+console.log(this.$refs.file.files[0])
+},
  ...mapActions(['add']),
        addItem(){
             let product={
